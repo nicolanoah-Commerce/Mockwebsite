@@ -8,7 +8,7 @@
   // This is intentionally lightweight and not a replacement for server-side authentication.
   const demoAuth = {
     username: 'LANDIWebsite',
-    passwordSha256: '04092bd9e55a6f5903955645a2eb84f73f44ba15d1d8b19681a08d7e51e35114'
+    passwordSha256: '95336194e9b48e1c661086516982d815ff1811de0fa5fdcd69ae71a8b888d0e2'
   };
   const authKey = 'landiPrototypeAuthenticatedV2';
   const authGate = byId('authGate');
