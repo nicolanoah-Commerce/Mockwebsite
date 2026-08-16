@@ -584,21 +584,18 @@
     if (modelBadge) modelBadge.hidden = true;
 
     try {
-      const response = await fetch('/api/compare', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ articleA: first.articleNo, articleB: second.articleNo }),
-        signal: aiComparisonController.signal
+      const payload = await requestChat({
+        channel: 'productCompare',
+        mode: 'compare',
+        message: `Vergleiche diese zwei Produkte und gib eine konkrete Kaufempfehlung: ${first.name} gegen ${second.name}.`,
+        history: [],
+        productsForContext: [first, second]
       });
-      let payload = {};
-      try { payload = await response.json(); } catch {}
-      if (!response.ok) throw new Error(payload.error || `API-Fehler ${response.status}`);
-      if (!payload.text) throw new Error('Die API hat keinen Vergleichstext geliefert.');
 
       body.className = 'ai-comparison-body is-ready';
       body.textContent = payload.text;
-      if (modelBadge && payload.model) {
-        modelBadge.textContent = payload.model;
+      if (modelBadge) {
+        modelBadge.textContent = 'Plattform';
         modelBadge.hidden = false;
       }
     } catch (error) {
@@ -763,18 +760,98 @@
     byId('serviceIssueType').value = '';
   });
 
-  /* Shared server-side AI chat */
-  async function requestChat({ mode, message, history, articleNo }) {
-    const response = await fetch('/api/chat', {
+  function compactProductContext({ articleNo, productsForContext } = {}) {
+    const explicit = Array.isArray(productsForContext) ? productsForContext.filter(Boolean) : [];
+    const selected = articleNo ? products.filter(p => p.articleNo === String(articleNo)) : [];
+    const pool = explicit.length ? explicit : selected.length ? selected : products.slice(0, 8);
+    return pool.map(p => {
+      const attrs = Object.entries(p.attributes || {}).slice(0, 10).map(([key, value]) => `${key}: ${value}`).join('; ');
+      return [
+        `Name: ${p.name}`,
+        `Artikel: ${p.articleNo}`,
+        `Kategorie: ${p.category}`,
+        `Marke: ${p.brand || ''}`,
+        `Preis: CHF ${p.price}`,
+        `URL: ${p.url || ''}`,
+        `Kurzbeschreibung: ${p.description || ''}`,
+        `Merkmale: ${p.featureSummary || ''}`,
+        attrs ? `Attribute: ${attrs}` : ''
+      ].filter(Boolean).join('\n');
+    }).join('\n\n---\n\n');
+  }
+
+  function platformChatConfig(channel) {
+    const root = window.LANDI_PLATFORM_CHATS || window.LANDI_PLATFORM_CHAT || {};
+    const chatCfg = root[channel] || {};
+    return {
+      apiBase: String(root.apiBase || '').replace(/\/+$/, ''),
+      publicToken: String(chatCfg.publicToken || root.publicToken || '').trim()
+    };
+  }
+
+  function sessionKeyForPlatformChat(channel) {
+    const cfg = platformChatConfig(channel);
+    return `landiExternalConversation:${channel}:${cfg.apiBase}:${cfg.publicToken}`;
+  }
+
+  async function getPlatformConversation(channel) {
+    const cfg = platformChatConfig(channel);
+    if (!cfg.apiBase || !cfg.publicToken) {
+      throw new Error(`Plattform-Chat "${channel}" ist noch nicht konfiguriert.`);
+    }
+    const key = sessionKeyForPlatformChat(channel);
+    const existing = sessionStorage.getItem(key);
+    if (existing) return existing;
+    const response = await fetch(`${cfg.apiBase}/external-chat/public/${cfg.publicToken}/conversations`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mode, message, history, articleNo })
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ client_nonce: crypto.randomUUID?.() || String(Date.now()) })
     });
     let payload = {};
     try { payload = await response.json(); } catch {}
-    if (!response.ok) throw new Error(payload.error || `API-Fehler ${response.status}`);
-    if (!payload.text) throw new Error('Die API hat keine Antwort geliefert.');
-    return payload;
+    if (!response.ok || !payload.conversation_token) {
+      throw new Error(payload.detail || payload.error?.message || `Plattform-Chat konnte keine Conversation starten (${response.status}).`);
+    }
+    sessionStorage.setItem(key, payload.conversation_token);
+    return payload.conversation_token;
+  }
+
+  /* Shared platform AI chat */
+  async function requestChat({ channel, mode, message, history, articleNo, productsForContext }) {
+    const cfg = platformChatConfig(channel);
+    const conversationToken = await getPlatformConversation(channel);
+    const productContext = compactProductContext({ articleNo, productsForContext });
+    const modeLabel = mode === 'service'
+      ? 'Serviceanfrage'
+      : mode === 'compare'
+        ? 'Produktvergleich'
+        : 'Produktsuche';
+    const framedMessage = [
+      `Modus: ${modeLabel}`,
+      `Nutzerfrage: ${message}`,
+      history?.length ? `Letzter Verlauf: ${history.map(item => `${item.role}: ${item.content}`).join('\n')}` : '',
+      productContext ? `LANDI Produktkontext:\n${productContext}` : '',
+      mode === 'service'
+        ? 'Hilf beim sicheren Eingrenzen des Problems. Keine riskanten Reparaturanleitungen. Wenn Service sinnvoll ist, klar empfehlen.'
+        : mode === 'compare'
+          ? 'Vergleiche strukturiert nach Eignung, Preis, Stärken, Schwächen und empfehle eines der Produkte für konkrete Nutzungsfälle.'
+          : 'Antworte knapp, hilfreich und auf Deutsch. Wenn du ein Produkt empfiehlst, nenne Produktname, Artikelnummer, Preis und URL.'
+    ].filter(Boolean).join('\n\n');
+    const response = await fetch(`${cfg.apiBase}/external-chat/public/${cfg.publicToken}/conversations/message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-External-Conversation': conversationToken
+      },
+      body: JSON.stringify({ message: framedMessage })
+    });
+    let payload = {};
+    try { payload = await response.json(); } catch {}
+    if (!response.ok) throw new Error(payload.detail || payload.error?.message || `API-Fehler ${response.status}`);
+    const text = payload.assistant_message?.content || payload.text || '';
+    if (!text) throw new Error('Die Plattform hat keine Antwort geliefert.');
+    return { text, raw: payload };
   }
 
   function addChatMessage(container, role, content, temporary = false) {
@@ -803,7 +880,7 @@
     byId('serviceCopyToOrder').hidden = false;
     const typing = addChatMessage(serviceMessages, 'assistant', '', true);
     try {
-      const payload = await requestChat({ mode:'service', message:clean, history:previous, articleNo:byId('serviceChatProduct').value });
+      const payload = await requestChat({ channel:'service', mode:'service', message:clean, history:previous, articleNo:byId('serviceChatProduct').value });
       typing.remove(); addChatMessage(serviceMessages, 'assistant', payload.text);
       serviceChatHistory.push({ role:'assistant', content:payload.text });
     } catch (error) {
@@ -853,7 +930,7 @@
     byId('landingChatSuggestions').style.display = 'none';
     const typing = addChatMessage(landingMessages, 'assistant', '', true);
     try {
-      const payload = await requestChat({ mode:'shopping', message:clean, history:previous });
+      const payload = await requestChat({ channel:'productSearch', mode:'shopping', message:clean, history:previous });
       typing.remove(); addChatMessage(landingMessages, 'assistant', payload.text);
       landingChatHistory.push({ role:'assistant', content:payload.text });
     } catch (error) {
