@@ -1,5 +1,5 @@
 window.LANDI_PLATFORM_CHATS = {
-  apiBase: "https://96081efb7d3ca0.lhr.life",
+  apiBase: "https://2e0f84bade51bb.lhr.life",
   service: {
     publicToken: "f57d8556199999e1c21982ab0eb2eebcd4861bd79c9d677a32d64f4df186a302"
   },
