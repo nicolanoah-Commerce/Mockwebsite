@@ -287,7 +287,7 @@
     if (drive) rows.push(`<strong>Hat das Gerät Radantrieb?</strong><br>${escapeHtml(drive)}.`);
     if (warranty) rows.push(`<strong>Wie lange ist die Garantie?</strong><br>${escapeHtml(warranty)} Monate.`);
     if (p.articleNo === '108065') rows.unshift('<strong>Benötigt der Mähroboter einen Begrenzungsdraht?</strong><br>Nein. Die Navigation erfolgt mit Kamera und Ultraschallsensoren; Magnetstreifen können zur Abgrenzung eingesetzt werden.');
-    return `<div class="pdp-question-demo">${rows.join('<hr style="border:0;border-top:1px solid #e1e7e3;margin:12px 0">') || 'Produktfragen werden später hier angezeigt.'}</div>`;
+    return `<div class="pdp-question-demo">${rows.join('<hr style="border:0;border-top:1px solid #e1e7e3;margin:12px 0">') || 'Produktfragen werden später hier angezeigt.'}<div class="pdp-question-action"><button class="ask-link" type="button" data-article="${escapeHtml(p.articleNo)}">Weitere Frage zu diesem Produkt stellen</button></div></div>`;
   }
 
   function renderReviews(p) {
@@ -587,7 +587,7 @@
       const payload = await requestChat({
         channel: 'productCompare',
         mode: 'compare',
-        message: `Vergleiche diese zwei Produkte und gib eine konkrete Kaufempfehlung: ${first.name} gegen ${second.name}.`,
+        message: `Vergleiche ProduktID ${first.articleNo} (${first.name}) mit ProduktID ${second.articleNo} (${second.name}) und gib eine konkrete Kaufempfehlung.`,
         history: [],
         productsForContext: [first, second]
       });
@@ -668,6 +668,8 @@
   const qbox = byId('questionBox');
   const serviceView = byId('serviceOrdersView');
   const accountNavIds = ['overviewItem','purchasedItem','serviceOrdersItem'];
+  const productQuestionHistory = [];
+  let selectedQuestionArticle = purchasedArticles[0] || '';
 
   function resetAccountViews() {
     overview.hidden = true;
@@ -699,16 +701,56 @@
   byId('questionsSubitem').addEventListener('click', () => {
     openPurchased(); qbox.classList.add('show'); byId('questionsSubitem').classList.add('active');
   });
+  function openProductQuestionBox(article) {
+    selectedQuestionArticle = String(article || selectedQuestionArticle || '');
+    showPage('account');
+    openPurchased();
+    qbox.classList.add('show');
+    const p = getProduct(selectedQuestionArticle);
+    byId('questionProductLabel').textContent = p ? `Produkt: ${p.name} · Art. ${p.articleNo}` : 'Produkt ausgewählt';
+    byId('qaResponse').classList.remove('show');
+    byId('qaResponse').textContent = '';
+    byId('questionInput').focus();
+  }
+
   purchaseList.addEventListener('click', e => {
     const btn = e.target.closest('.ask-link'); if (!btn) return;
-    openPurchased(); qbox.classList.add('show');
-    const p = getProduct(btn.dataset.article);
-    byId('questionProductLabel').textContent = p ? `Produkt: ${p.name} · Art. ${p.articleNo}` : 'Produkt ausgewählt';
-    byId('questionInput').focus();
+    openProductQuestionBox(btn.dataset.article);
   });
-  byId('askBtn').addEventListener('click', () => {
-    if (!byId('questionInput').value.trim()) { toast('Bitte zuerst eine Frage eingeben.'); return; }
-    byId('qaResponse').classList.add('show');
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.pdp-question-action .ask-link'); if (!btn) return;
+    openProductQuestionBox(btn.dataset.article);
+  });
+  byId('askBtn').addEventListener('click', async () => {
+    const input = byId('questionInput');
+    const clean = input.value.trim();
+    if (!clean) { toast('Bitte zuerst eine Frage eingeben.'); return; }
+    const responseBox = byId('qaResponse');
+    const p = getProduct(selectedQuestionArticle);
+    const previous = productQuestionHistory.slice(-8);
+    productQuestionHistory.push({ role:'user', content:clean });
+    responseBox.classList.add('show', 'is-loading');
+    responseBox.textContent = 'Antwort wird aus den Produktdaten geladen ...';
+    byId('askBtn').disabled = true;
+    try {
+      const payload = await requestChat({
+        channel:'productQuestions',
+        mode:'productQuestions',
+        message: clean,
+        history: previous,
+        articleNo: selectedQuestionArticle,
+        productsForContext: p ? [p] : []
+      });
+      responseBox.classList.remove('is-loading');
+      responseBox.textContent = payload.text;
+      productQuestionHistory.push({ role:'assistant', content:payload.text });
+      input.value = '';
+    } catch (error) {
+      responseBox.classList.remove('is-loading');
+      responseBox.textContent = `Produktfrage konnte nicht beantwortet werden: ${error.message}`;
+    } finally {
+      byId('askBtn').disabled = false;
+    }
   });
 
   // Populate purchased-product selectors for service.
@@ -825,17 +867,21 @@
       ? 'Serviceanfrage'
       : mode === 'compare'
         ? 'Produktvergleich'
-        : 'Produktsuche';
+        : mode === 'productQuestions'
+          ? 'Produktfragen'
+          : 'Produktsuche';
     const framedMessage = [
       `Modus: ${modeLabel}`,
       `Nutzerfrage: ${message}`,
       history?.length ? `Letzter Verlauf: ${history.map(item => `${item.role}: ${item.content}`).join('\n')}` : '',
       productContext ? `LANDI Produktkontext:\n${productContext}` : '',
       mode === 'service'
-        ? 'Hilf beim sicheren Eingrenzen des Problems. Keine riskanten Reparaturanleitungen. Wenn Service sinnvoll ist, klar empfehlen.'
+        ? 'Hilf beim sicheren Eingrenzen des Problems. Keine riskanten Reparaturanleitungen. Wenn die Stimmung wütend, frustriert, aggressiv oder eskalierend wirkt, direkt auf den Support verweisen. Referenziere die ProduktID.'
         : mode === 'compare'
-          ? 'Vergleiche strukturiert nach Eignung, Preis, Stärken, Schwächen und empfehle eines der Produkte für konkrete Nutzungsfälle.'
-          : 'Antworte knapp, hilfreich und auf Deutsch. Wenn du ein Produkt empfiehlst, nenne Produktname, Artikelnummer, Preis und URL.'
+          ? 'Vergleiche strukturiert nach Eignung, Preis, Stärken, Schwächen und empfehle eines der Produkte für konkrete Nutzungsfälle. Referenziere beide ProduktIDs.'
+          : mode === 'productQuestions'
+            ? 'Beantworte die Frage anhand der Produktdaten/RAG-Daten. Referenziere die ProduktID/Artikelnummer und nenne den Produktlink, wenn vorhanden.'
+            : 'Führe eine Produktsuche. Stelle kurze Fragen, schlage früh passende Produkte vor und nenne Produktname, Artikelnummer, Preis und URL.'
     ].filter(Boolean).join('\n\n');
     const response = await fetch(`${cfg.apiBase}/external-chat/public/${cfg.publicToken}/conversations/message`, {
       method: 'POST',

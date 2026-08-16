@@ -1,5 +1,8 @@
 window.LANDI_PLATFORM_CHATS = {
-  apiBase: "https://2e0f84bade51bb.lhr.life",
+  apiBase: "https://90e39693dd0742.lhr.life",
+  productQuestions: {
+    publicToken: "98b01954945cf329c415473de00e4629ef037ca7b108fb0a88eda15da6f44fba"
+  },
   service: {
     publicToken: "f57d8556199999e1c21982ab0eb2eebcd4861bd79c9d677a32d64f4df186a302"
   },
