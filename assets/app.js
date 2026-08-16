@@ -6,9 +6,18 @@
 
   // Simple client-side gate for the internal prototype.
   // This is intentionally lightweight and not a replacement for server-side authentication.
-  const demoAuth = { username: 'LANDIWebsite', password: 'TestLANDIWebsite' };
-  const authKey = 'landiPrototypeAuthenticated';
+  const demoAuth = {
+    username: 'LANDIWebsite',
+    passwordSha256: '04092bd9e55a6f5903955645a2eb84f73f44ba15d1d8b19681a08d7e51e35114'
+  };
+  const authKey = 'landiPrototypeAuthenticatedV2';
   const authGate = byId('authGate');
+
+  async function sha256Hex(value) {
+    const bytes = new TextEncoder().encode(value);
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+  }
 
   function unlockPrototype() {
     sessionStorage.setItem(authKey, '1');
@@ -28,11 +37,12 @@
   if (sessionStorage.getItem(authKey) === '1') unlockPrototype();
   else lockPrototype();
 
-  byId('authForm')?.addEventListener('submit', event => {
+  byId('authForm')?.addEventListener('submit', async event => {
     event.preventDefault();
     const username = byId('authUsername').value.trim();
     const password = byId('authPassword').value;
-    if (username === demoAuth.username && password === demoAuth.password) {
+    const passwordHash = await sha256Hex(password);
+    if (username === demoAuth.username && passwordHash === demoAuth.passwordSha256) {
       byId('authError').textContent = '';
       unlockPrototype();
       return;

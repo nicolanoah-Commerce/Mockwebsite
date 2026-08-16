@@ -6,7 +6,7 @@ Klickbarer LANDI-Prototyp mit Produktvergleich, PDP, Kundenkonto, Serviceaufträ
 
 - **Einfacher HTML-Login vor dem Prototype**
   - Benutzer: `LANDIWebsite`
-  - Passwort: `TestLANDIWebsite`
+  - Passwort: wird separat geteilt und nicht im README veröffentlicht
   - bleibt während des geöffneten Browser-Tabs angemeldet (`sessionStorage`)
   - Abmelden über **Kundenkonto → Abmelden**
 
@@ -131,4 +131,4 @@ Die Rezensionen im Prototype sind Beispielrezensionen. Die KI-Prompts weisen das
 
 ## Hinweis zum Login
 
-Der Login in v9 ist bewusst ein **einfacher clientseitiger Zugangsschutz für Demos/Prototypen**. Benutzername und Passwort sind deshalb im ausgelieferten JavaScript sichtbar und stellen keinen sicheren Schutz für sensible Daten dar. Für einen öffentlich erreichbaren Produktionsbetrieb sollte die Authentifizierung serverseitig bzw. über den Hosting-/Identity-Provider erfolgen.
+Der Login in v9 ist bewusst ein **einfacher clientseitiger Zugangsschutz für Demos/Prototypen**. Der Browser prüft das Passwort gegen einen im JavaScript hinterlegten Hash. Das ist besser als Klartext im Code, stellt aber keinen sicheren Schutz für sensible Daten dar. Für einen öffentlich erreichbaren Produktionsbetrieb sollte die Authentifizierung serverseitig bzw. über den Hosting-/Identity-Provider erfolgen.
