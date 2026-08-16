@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#007533">
+  <meta name="description" content="Klickbarer LANDI Prototype für Produktvergleich und Fragen zu gekauften Produkten.">
+  <title>LANDI – Produkte, Vergleich & Kundenkonto</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="data/products.js" defer></script>
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <div class="utility-bar">
+    <div class="utility-inner">
+      <div class="utility-left"><span>☼ LANDI Wetter ▾</span></div>
+      <div class="utility-right"><button class="utility-account" id="accountUtilityBtn" type="button">◎ Simon Affentranger ▾</button><span>DE</span><span>FR</span></div>
+    </div>
+  </div>
+
+  <header class="main-header">
+    <div class="header-row">
+      <button class="logo-box" id="homeLogo" aria-label="Zur Startseite"><img src="assets/landi-logo.png" alt="LANDI"></button>
+      <div class="service-zone" aria-label="Standort und Lieferung">
+        <div class="service-item"><span>◉</span><div class="service-copy">Meine LANDI<small>Geschäft auswählen</small></div></div>
+        <div class="service-item"><span>▣</span><div class="service-copy">Lieferung<small>Postleitzahl auswählen</small></div></div>
+      </div>
+      <div class="search-wrap">
+        <div class="search-box" role="search">
+          <label class="visually-hidden" for="globalSearch">Produkte suchen</label>
+          <input id="globalSearch" type="search" placeholder="Suche" autocomplete="off">
+          <select id="searchScope" aria-label="Suchbereich"><option value="all">Überall</option><option value="products">Produkte</option></select>
+          <button class="search-button" id="searchBtn" aria-label="Suchen">⌕</button>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="header-action badge" id="wishlistBtn"><span class="icon">♡</span><span class="label">Merkzettel</span></button>
+        <button class="header-action" id="cartHeaderBtn"><span class="icon">🛒</span><span class="label">Warenkorb</span></button>
+      </div>
+    </div>
+    <nav class="category-bar" aria-label="Hauptnavigation">
+      <div class="category-inner">
+        <button class="cat-btn">Heizen</button><button class="cat-btn">Garten</button><button class="cat-btn">Pflanzen</button><button class="cat-btn">Landwirtschaft</button><button class="cat-btn">Haustiere</button><button class="cat-btn">Haushalt</button><button class="cat-btn">Freizeit</button><button class="cat-btn">Do it</button><button class="cat-btn">Mobilität</button><button class="cat-btn">Getränke</button><button class="cat-btn">Lebensmittel</button><button class="cat-btn">Diverses</button><button class="cat-btn">Sonstige</button>
+        <button class="cat-btn compare-nav" id="compareNav">⇄ Produktevergleich</button>
+        <div class="cat-spacer"></div>
+        <div class="cat-meta"><button class="cat-btn">▧ Aktuell</button><button class="cat-btn">▥ Themen</button><button class="cat-btn">◷ Berater</button><button class="cat-btn">☼ Wetter</button></div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page active" id="landingPage" aria-labelledby="offersTitle">
+      <div class="landing"><div class="content-wrap">
+        <div class="hero" aria-label="Der perfekte Rasen beginnt hier"><button class="hero-clickzone" id="heroProduct" aria-label="Rasenmäher Roboter 800 vergleichen"></button></div>
+        <h1 class="section-title" id="offersTitle">Top Angebote</h1>
+        <p class="section-sub">Entdecken Sie jetzt unsere aktuellen Top Angebote – ausgewählte Produkte für Garten, Rasenpflege und Heimwerken.</p>
+        <div class="product-toolbar">
+          <div class="product-count" id="productCount"></div>
+          <select class="filter-select" id="categoryFilter" aria-label="Produkte filtern"><option value="all">Alle Produkte</option></select>
+        </div>
+        <div class="product-grid" id="productGrid" aria-live="polite"></div>
+      </div></div>
+    </section>
+
+    <section class="page" id="productPage" aria-labelledby="pdpTitle">
+      <div class="pdp-shell">
+        <div class="pdp-breadcrumbs" id="pdpBreadcrumbs" aria-label="Brotkrümelnavigation"></div>
+        <div class="pdp-layout">
+          <div class="pdp-media-column">
+            <button class="pdp-back" id="pdpBack" type="button">‹ <span>Zurück</span></button>
+            <div class="pdp-media-stage">
+              <img id="pdpMainImage" class="pdp-main-image" src="" alt="">
+              <span class="pdp-guarantee" aria-label="5 Jahre Garantie"><strong>5</strong><small>Jahre</small></span>
+            </div>
+            <div class="pdp-gallery" id="pdpGallery" aria-label="Produktbilder"></div>
+            <div class="pdp-gallery-count" id="pdpGalleryCount"></div>
+          </div>
+
+          <aside class="pdp-buy-card" aria-label="Produkt kaufen">
+            <div class="pdp-brand" id="pdpBrand"></div>
+            <div class="pdp-title-row">
+              <h1 id="pdpTitle"></h1>
+              <div class="pdp-price" id="pdpPrice"></div>
+            </div>
+            <div class="pdp-tags" id="pdpTags"></div>
+            <p class="pdp-description" id="pdpDescription"></p>
+            <div class="pdp-price-note" id="pdpPriceNote"></div>
+
+            <label class="pdp-addon" id="pdpDisposalRow">
+              <span class="pdp-addon-left"><input type="checkbox" id="pdpDisposal"> <span>Entsorgung</span></span>
+              <span class="pdp-addon-info">ⓘ</span>
+              <strong id="pdpDisposalPrice"></strong>
+            </label>
+
+            <div class="pdp-fulfilment">
+              <label class="pdp-fulfilment-option">
+                <span><input type="radio" name="fulfilment" value="delivery" checked> <strong>Liefern lassen</strong></span>
+                <a href="#" id="pdpDeliveryLink">Lieferoptionen prüfen</a>
+              </label>
+              <label class="pdp-fulfilment-option">
+                <span><input type="radio" name="fulfilment" value="pickup"> <strong>Reservieren &amp; abholen</strong></span>
+                <a href="#" id="pdpPickupLink">Wählen Sie einen Laden aus</a>
+              </label>
+            </div>
+
+            <div class="pdp-cart-row">
+              <div class="pdp-qty" aria-label="Menge">
+                <button type="button" id="pdpQtyMinus" aria-label="Menge reduzieren">−</button>
+                <output id="pdpQty">1</output>
+                <button type="button" id="pdpQtyPlus" aria-label="Menge erhöhen">＋</button>
+              </div>
+              <button class="pdp-cart-btn" id="pdpAddCart" type="button">🛒 <span>In den Warenkorb</span></button>
+            </div>
+            <div class="pdp-card-actions">
+              <button type="button" id="pdpWishlist">♡ <span>Zum Merkzettel</span></button>
+              <button type="button" id="pdpPrint">▣ <span>Drucken</span></button>
+              <button type="button" id="pdpCompare">⇄ <span>Vergleichen</span></button>
+            </div>
+          </aside>
+        </div>
+
+        <div class="pdp-content" id="pdpContent">
+          <section class="pdp-accordion-section">
+            <button class="pdp-accordion-toggle" type="button" data-target="pdpFeatures" aria-expanded="false"><span>＋</span> Produktmerkmale</button>
+            <div class="pdp-accordion-panel" id="pdpFeatures"></div>
+          </section>
+          <section class="pdp-accordion-section">
+            <button class="pdp-accordion-toggle" type="button" data-target="pdpSpecs" aria-expanded="false"><span>＋</span> Produktspezifikationen</button>
+            <div class="pdp-accordion-panel" id="pdpSpecs"></div>
+          </section>
+          <section class="pdp-accordion-section">
+            <button class="pdp-accordion-toggle" type="button" data-target="pdpReviews" aria-expanded="false"><span>＋</span> Rezensionen <small class="demo-pill">Demo</small></button>
+            <div class="pdp-accordion-panel" id="pdpReviews"></div>
+          </section>
+          <section class="pdp-accordion-section">
+            <button class="pdp-accordion-toggle" type="button" data-target="pdpQuestions" aria-expanded="false"><span>＋</span> Fragen zum Produkt</button>
+            <div class="pdp-accordion-panel" id="pdpQuestions"></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="comparePage" aria-labelledby="compareTitle">
+      <div class="compare-page"><div class="content-wrap">
+        <div class="compare-head"><div><h1 id="compareTitle">Produktevergleich</h1><p>Zwei Produkte auswählen. Produkt 1 ist immer ein LANDI Produkt; Produkt 2 kann auch extern sein.</p></div><button class="back-link" id="backHome">← Zurück zur Übersicht</button></div>
+        <div class="compare-panel">
+          <div class="compare-columns">
+            <div class="picker"><h2>Produkt 1</h2><div class="rule">Nur LANDI Produkte</div><div class="field"><label for="landiProduct">LANDI Produkt</label><select id="landiProduct"><option value="">Produkt wählen …</option></select></div><div class="selected-preview" id="firstPreview">Noch kein Produkt ausgewählt.</div></div>
+            <div class="picker"><h2>Produkt 2</h2><div class="rule">LANDI Produkt oder Produkt aus dem Netz</div><div class="tabs" role="tablist"><button class="tab active" data-mode="landi" role="tab" aria-selected="true">LANDI</button><button class="tab" data-mode="web" role="tab" aria-selected="false">Aus dem Netz</button></div><div id="secondLandi"><div class="field"><label for="otherProduct">LANDI Produkt</label><select id="otherProduct"><option value="">Produkt wählen …</option></select></div></div><div class="external-fields" id="externalFields"><div class="field"><label for="externalName">Produktname</label><input id="externalName" placeholder="z.B. Husqvarna Automower 305"></div><div class="field"><label for="externalUrl">Produkt-URL</label><input id="externalUrl" type="url" placeholder="https://…" inputmode="url"></div><div class="rule">Die URL wird validiert, aber im statischen Prototype nicht automatisch ausgelesen.</div></div><div class="selected-preview" id="secondPreview">Noch kein Produkt ausgewählt.</div></div>
+          </div>
+          <div class="compare-cta"><button class="big-btn" id="compareBtn" disabled>Vergleichen</button></div>
+          <div class="compare-result" id="compareResult" aria-live="polite"></div>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="page" id="accountPage" aria-labelledby="accountTitle">
+      <div class="account-page"><div class="account-layout">
+        <aside class="sidebar" aria-label="Kundenkonto Navigation">
+          <div class="side-pad"><button class="side-item active" id="overviewItem">▦ Übersicht <span>›</span></button></div>
+          <div class="side-heading">Bestellungen und Services</div>
+          <div class="side-pad"><button class="side-item">▤ Bestellungen <span>›</span></button><button class="side-item" id="purchasedItem">▣ Gekaufte Produkte <span>⌄</span></button><div class="side-submenu" id="purchasedSubmenu"><button class="side-subitem" id="questionsSubitem">Fragen zu meinen Produkten</button></div><button class="side-item">▧ Kundendienstanfragen <span>›</span></button><button class="side-item">⚒ Serviceaufträge <span>›</span></button></div>
+          <div class="side-heading">Kontodaten</div><div class="side-pad"><button class="side-item">◎ Mein Konto <span>›</span></button><button class="side-item">▦ Adressen <span>›</span></button><button class="side-item">♡ Merkliste <span>›</span></button></div><div class="side-heading"></div><div class="side-pad"><button class="side-item">↪ Abmelden</button></div>
+        </aside>
+        <div class="account-main"><h1 id="accountTitle">Hello, Simon Affentranger</h1><div id="accountOverview"><div class="account-card"><h2>▤ Bestellungen</h2><div class="empty">Ihre Bestellungen sind derzeit nicht verfügbar</div></div></div><div id="purchasedView" hidden><div class="account-card"><h2>Gekaufte Produkte</h2><div class="purchase-list" id="purchaseList"></div></div></div><div class="question-box" id="questionBox"><div class="account-card"><h2>Fragen zu meinen Produkten</h2><p id="questionProductLabel">Wählen Sie ein gekauftes Produkt aus.</p><textarea id="questionInput" rows="4" placeholder="z.B. Wie reinige ich den Rasenmäher nach dem Mähen?"></textarea><div style="margin-top:10px"><button class="big-btn" id="askBtn">Frage stellen</button></div><div class="qa-response" id="qaResponse"><strong>Integration vorbereitet:</strong> Hier kann später eine Antwort aus Bedienungsanleitung, Produktdaten, Servicewissen und vorhandenen Produktfragen eingebunden werden.</div></div></div></div>
+      </div></div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

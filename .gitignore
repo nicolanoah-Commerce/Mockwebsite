@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+.DS_Store
+.vercel
+node_modules
+npm-debug.log*

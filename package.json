@@ -1,0 +1,14 @@
+{
+  "name": "landi-product-comparison-prototype",
+  "version": "9.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.6"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env server.mjs",
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && node --check api/compare.mjs && node --check api/chat.mjs && node --check lib/comparison.mjs && node --check lib/chat.mjs && node --check assets/app.js"
+  }
+}

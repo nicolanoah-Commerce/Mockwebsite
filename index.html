@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#007533">
+  <meta name="description" content="Klickbarer LANDI Prototype für Produktvergleich und Fragen zu gekauften Produkten.">
+  <title>LANDI – Produkte, Vergleich & Kundenkonto</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="data/products.js" defer></script>
+  <script src="assets/app.js" defer></script>
+</head>
+<body class="auth-locked">
+  <section class="auth-gate" id="authGate" aria-labelledby="authTitle">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="auth-logo-wrap"><img src="assets/landi-logo.png" alt="LANDI"></div>
+        <div>
+          <span>Interner Prototype</span>
+          <strong>LANDI Website</strong>
+        </div>
+      </div>
+      <div class="auth-copy">
+        <h1 id="authTitle">Willkommen</h1>
+        <p>Bitte melden Sie sich an, um den LANDI Prototype zu öffnen.</p>
+      </div>
+      <form class="auth-form" id="authForm" autocomplete="on">
+        <label for="authUsername">Benutzername</label>
+        <input id="authUsername" name="username" type="text" autocomplete="username" required autofocus>
+        <label for="authPassword">Passwort</label>
+        <div class="auth-password-row">
+          <input id="authPassword" name="password" type="password" autocomplete="current-password" required>
+          <button type="button" id="authTogglePassword" aria-label="Passwort anzeigen">Anzeigen</button>
+        </div>
+        <div class="auth-error" id="authError" role="alert" aria-live="polite"></div>
+        <button class="auth-submit" type="submit">Anmelden <span>→</span></button>
+      </form>
+      <p class="auth-note">Zugangsschutz für den Prototype.</p>
+    </div>
+  </section>
+  <div class="utility-bar">
+    <div class="utility-inner">
+      <div class="utility-left"><span>☼ LANDI Wetter ▾</span></div>
+      <div class="utility-right"><button class="utility-account" id="accountUtilityBtn" type="button">◎ Simon Affentranger ▾</button><span>DE</span><span>FR</span></div>
+    </div>
+  </div>
+
+  <header class="main-header">
+    <div class="header-row">
+      <button class="logo-box" id="homeLogo" aria-label="Zur Startseite"><img src="assets/landi-logo.png" alt="LANDI"></button>
+      <div class="service-zone" aria-label="Standort und Lieferung">
+        <div class="service-item"><span>◉</span><div class="service-copy">Meine LANDI<small>Geschäft auswählen</small></div></div>
+        <div class="service-item"><span>▣</span><div class="service-copy">Lieferung<small>Postleitzahl auswählen</small></div></div>
+      </div>
+      <div class="search-wrap">
+        <div class="search-box" role="search">
+          <label class="visually-hidden" for="globalSearch">Produkte suchen</label>
+          <input id="globalSearch" type="search" placeholder="Suche" autocomplete="off">
+          <select id="searchScope" aria-label="Suchbereich"><option value="all">Überall</option><option value="products">Produkte</option></select>
+          <button class="search-button" id="searchBtn" aria-label="Suchen">⌕</button>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="header-action badge" id="wishlistBtn"><span class="icon">♡</span><span class="label">Merkzettel</span></button>
+        <button class="header-action" id="cartHeaderBtn"><span class="icon">🛒</span><span class="label">Warenkorb</span></button>
+      </div>
+    </div>
+    <nav class="category-bar" aria-label="Hauptnavigation">
+      <div class="category-inner">
+        <button class="cat-btn">Heizen</button><button class="cat-btn">Garten</button><button class="cat-btn">Pflanzen</button><button class="cat-btn">Landwirtschaft</button><button class="cat-btn">Haustiere</button><button class="cat-btn">Haushalt</button><button class="cat-btn">Freizeit</button><button class="cat-btn">Do it</button><button class="cat-btn">Mobilität</button><button class="cat-btn">Getränke</button><button class="cat-btn">Lebensmittel</button><button class="cat-btn">Diverses</button><button class="cat-btn">Sonstige</button>
+        <button class="cat-btn compare-nav" id="compareNav">⇄ Produktevergleich</button>
+        <div class="cat-spacer"></div>
+        <div class="cat-meta"><button class="cat-btn">▧ Aktuell</button><button class="cat-btn">▥ Themen</button><button class="cat-btn">◷ Berater</button><button class="cat-btn">☼ Wetter</button></div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page active" id="landingPage" aria-labelledby="offersTitle">
+      <div class="landing"><div class="content-wrap">
+        <div class="hero" aria-label="Der perfekte Rasen beginnt hier"><button class="hero-clickzone" id="heroProduct" aria-label="Rasenmäher Roboter 800 vergleichen"></button></div>
+        <h1 class="section-title" id="offersTitle">Top Angebote</h1>
+        <p class="section-sub">Entdecken Sie jetzt unsere aktuellen Top Angebote – ausgewählte Produkte für Garten, Rasenpflege und Heimwerken.</p>
+        <div class="product-toolbar">
+          <div class="product-count" id="productCount"></div>
+          <select class="filter-select" id="categoryFilter" aria-label="Produkte filtern"><option value="all">Alle Produkte</option></select>
+        </div>
+        <div class="product-grid" id="productGrid" aria-live="polite"></div>
+      </div></div>
+    </section>
+
+    <section class="page" id="productPage" aria-labelledby="pdpTitle">
+      <div class="pdp-shell">
+        <div class="pdp-breadcrumbs" id="pdpBreadcrumbs" aria-label="Brotkrümelnavigation"></div>
+        <div class="pdp-layout">
+          <div class="pdp-media-column">
+            <button class="pdp-back" id="pdpBack" type="button">‹ <span>Zurück</span></button>
+            <div class="pdp-media-stage">
+              <img id="pdpMainImage" class="pdp-main-image" src="" alt="">
+              <span class="pdp-guarantee" aria-label="5 Jahre Garantie"><strong>5</strong><small>Jahre</small></span>
+            </div>
+            <div class="pdp-gallery" id="pdpGallery" aria-label="Produktbilder"></div>
+            <div class="pdp-gallery-count" id="pdpGalleryCount"></div>
+          </div>
+
+          <aside class="pdp-buy-card" aria-label="Produkt kaufen">
+            <div class="pdp-brand" id="pdpBrand"></div>
+            <div class="pdp-title-row">
+              <h1 id="pdpTitle"></h1>
+              <div class="pdp-price" id="pdpPrice"></div>
+            </div>
+            <div class="pdp-tags" id="pdpTags"></div>
+            <p class="pdp-description" id="pdpDescription"></p>
+            <div class="pdp-price-note" id="pdpPriceNote"></div>
+
+            <label class="pdp-addon" id="pdpDisposalRow">
+              <span class="pdp-addon-left"><input type="checkbox" id="pdpDisposal"> <span>Entsorgung</span></span>
+              <span class="pdp-addon-info">ⓘ</span>
+              <strong id="pdpDisposalPrice"></strong>
+            </label>
+
+            <div class="pdp-fulfilment">
+              <label class="pdp-fulfilment-option">
+                <span><input type="radio" name="fulfilment" value="delivery" checked> <strong>Liefern lassen</strong></span>
+                <a href="#" id="pdpDeliveryLink">Lieferoptionen prüfen</a>
+              </label>
+              <label class="pdp-fulfilment-option">
+                <span><input type="radio" name="fulfilment" value="pickup"> <strong>Reservieren &amp; abholen</strong></span>
+                <a href="#" id="pdpPickupLink">Wählen Sie einen Laden aus</a>
+              </label>
+            </div>
+
+            <div class="pdp-cart-row">
+              <div class="pdp-qty" aria-label="Menge">
+                <button type="button" id="pdpQtyMinus" aria-label="Menge reduzieren">−</button>
+                <output id="pdpQty">1</output>
+                <button type="button" id="pdpQtyPlus" aria-label="Menge erhöhen">＋</button>
+              </div>
+              <button class="pdp-cart-btn" id="pdpAddCart" type="button">🛒 <span>In den Warenkorb</span></button>
+            </div>
+            <div class="pdp-card-actions">
+              <button type="button" id="pdpWishlist">♡ <span>Zum Merkzettel</span></button>
+              <button type="button" id="pdpPrint">▣ <span>Drucken</span></button>
+              <button type="button" id="pdpCompare">⇄ <span>Vergleichen</span></button>
+            </div>
+          </aside>
+        </div>
+
+        <div class="pdp-content" id="pdpContent">
+          <section class="pdp-accordion-section">
+            <button class="pdp-accordion-toggle" type="button" data-target="pdpFeatures" aria-expanded="false"><span>＋</span> Produktmerkmale</button>
+            <div class="pdp-accordion-panel" id="pdpFeatures"></div>
+          </section>
+          <section class="pdp-accordion-section">
+            <button class="pdp-accordion-toggle" type="button" data-target="pdpSpecs" aria-expanded="false"><span>＋</span> Produktspezifikationen</button>
+            <div class="pdp-accordion-panel" id="pdpSpecs"></div>
+          </section>
+          <section class="pdp-accordion-section">
+            <button class="pdp-accordion-toggle" type="button" data-target="pdpReviews" aria-expanded="false"><span>＋</span> Rezensionen <small class="demo-pill">Demo</small></button>
+            <div class="pdp-accordion-panel" id="pdpReviews"></div>
+          </section>
+          <section class="pdp-accordion-section">
+            <button class="pdp-accordion-toggle" type="button" data-target="pdpQuestions" aria-expanded="false"><span>＋</span> Fragen zum Produkt</button>
+            <div class="pdp-accordion-panel" id="pdpQuestions"></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="comparePage" aria-labelledby="compareTitle">
+      <div class="compare-page"><div class="content-wrap">
+        <div class="compare-head">
+          <div>
+            <div class="compare-eyebrow">LANDI Kaufberatung</div>
+            <h1 id="compareTitle">Produkte vergleichen</h1>
+            <p>Wählen Sie zwei Produkte. Links bleibt immer ein LANDI Produkt, rechts können Sie auch ein Produkt aus dem Netz ergänzen.</p>
+          </div>
+          <button class="back-link" id="backHome" type="button">← Zurück zur Übersicht</button>
+        </div>
+
+        <div class="compare-guide" aria-label="So funktioniert der Vergleich">
+          <div><span>1</span><strong>LANDI Produkt wählen</strong><small>Aus unserem Sortiment</small></div>
+          <i aria-hidden="true">→</i>
+          <div><span>2</span><strong>Gegenprodukt wählen</strong><small>LANDI oder externe URL</small></div>
+          <i aria-hidden="true">→</i>
+          <div><span>3</span><strong>Unterschiede sehen</strong><small>Daten &amp; Demo-Rezensionen</small></div>
+        </div>
+
+        <div class="compare-panel" id="comparePanel">
+          <div class="compare-columns">
+            <article class="picker compare-picker">
+              <div class="picker-heading">
+                <div class="picker-step">1</div>
+                <div><h2>LANDI Produkt</h2><p>Das Ausgangsprodukt für den Vergleich</p></div>
+                <span class="picker-required">LANDI</span>
+              </div>
+              <label class="visually-hidden" for="landiProduct">LANDI Produkt 1</label>
+              <select class="visually-hidden" id="landiProduct"><option value="">Produkt wählen …</option></select>
+              <div class="selected-preview compare-preview" id="firstPreview">Noch kein Produkt ausgewählt.</div>
+            </article>
+
+            <div class="compare-vs" aria-hidden="true"><span>VS</span></div>
+
+            <article class="picker compare-picker">
+              <div class="picker-heading">
+                <div class="picker-step">2</div>
+                <div><h2>Vergleichsprodukt</h2><p>LANDI Produkt oder Produkt aus dem Netz</p></div>
+              </div>
+              <div class="tabs compare-tabs" role="tablist" aria-label="Quelle für Produkt 2">
+                <button class="tab active" data-mode="landi" role="tab" aria-selected="true" type="button">LANDI</button>
+                <button class="tab" data-mode="web" role="tab" aria-selected="false" type="button">Aus dem Netz</button>
+              </div>
+              <div id="secondLandi">
+                <label class="visually-hidden" for="otherProduct">LANDI Produkt 2</label>
+                <select class="visually-hidden" id="otherProduct"><option value="">Produkt wählen …</option></select>
+              </div>
+              <div class="external-fields compare-external" id="externalFields">
+                <div class="external-intro"><span>↗</span><div><strong>Externes Produkt</strong><small>Für die spätere Integration wird die Produktseite automatisch ausgelesen.</small></div></div>
+                <div class="field"><label for="externalName">Produktname</label><input id="externalName" placeholder="z.B. Husqvarna Automower 305" autocomplete="off"></div>
+                <div class="field"><label for="externalUrl">Produkt-URL</label><input id="externalUrl" type="url" placeholder="https://…" inputmode="url" autocomplete="off"></div>
+                <div class="external-note">Im statischen Prototyp prüfen wir nur Name und URL. Produktdaten werden später via Backend ergänzt.</div>
+              </div>
+              <div class="selected-preview compare-preview" id="secondPreview">Noch kein Produkt ausgewählt.</div>
+            </article>
+          </div>
+
+          <div class="compare-cta">
+            <div class="compare-status" id="compareStatus"><span>○</span><div><strong>Zwei Produkte auswählen</strong><small>Danach wird der Vergleich freigeschaltet.</small></div></div>
+            <button class="big-btn compare-main-btn" id="compareBtn" disabled type="button">Produkte vergleichen <span>→</span></button>
+          </div>
+          <div class="compare-result" id="compareResult" aria-live="polite"></div>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="page" id="accountPage" aria-labelledby="accountTitle">
+      <div class="account-page"><div class="account-layout">
+        <aside class="sidebar" aria-label="Kundenkonto Navigation">
+          <div class="side-pad"><button class="side-item active" id="overviewItem">▦ Übersicht <span>›</span></button></div>
+          <div class="side-heading">Bestellungen und Services</div>
+          <div class="side-pad"><button class="side-item">▤ Bestellungen <span>›</span></button><button class="side-item" id="purchasedItem">▣ Gekaufte Produkte <span>⌄</span></button><div class="side-submenu" id="purchasedSubmenu"><button class="side-subitem" id="questionsSubitem">Fragen zu meinen Produkten</button></div><button class="side-item">▧ Kundendienstanfragen <span>›</span></button><button class="side-item" id="serviceOrdersItem">⚒ Serviceaufträge <span>›</span></button></div>
+          <div class="side-heading">Kontodaten</div><div class="side-pad"><button class="side-item">◎ Mein Konto <span>›</span></button><button class="side-item">▦ Adressen <span>›</span></button><button class="side-item">♡ Merkliste <span>›</span></button></div><div class="side-heading"></div><div class="side-pad"><button class="side-item" id="prototypeLogoutBtn">↪ Abmelden</button></div>
+        </aside>
+        <div class="account-main">
+          <h1 id="accountTitle">Hello, Simon Affentranger</h1>
+          <div id="accountOverview"><div class="account-card"><h2>▤ Bestellungen</h2><div class="empty">Ihre Bestellungen sind derzeit nicht verfügbar</div></div></div>
+          <div id="purchasedView" hidden><div class="account-card"><h2>Gekaufte Produkte</h2><div class="purchase-list" id="purchaseList"></div></div></div>
+          <div class="question-box" id="questionBox"><div class="account-card"><h2>Fragen zu meinen Produkten</h2><p id="questionProductLabel">Wählen Sie ein gekauftes Produkt aus.</p><textarea id="questionInput" rows="4" placeholder="z.B. Wie reinige ich den Rasenmäher nach dem Mähen?"></textarea><div style="margin-top:10px"><button class="big-btn" id="askBtn">Frage stellen</button></div><div class="qa-response" id="qaResponse"><strong>Integration vorbereitet:</strong> Hier kann später eine Antwort aus Bedienungsanleitung, Produktdaten, Servicewissen und vorhandenen Produktfragen eingebunden werden.</div></div></div>
+
+          <section class="service-view" id="serviceOrdersView" hidden aria-labelledby="serviceOrdersTitle">
+            <div class="service-view-head">
+              <div><span class="service-eyebrow">LANDI Service</span><h2 id="serviceOrdersTitle">Serviceaufträge</h2><p>Erstellen Sie einen Serviceauftrag oder klären Sie Ihr Anliegen zuerst mit dem KI-Serviceassistenten.</p></div>
+              <span class="service-status-pill">● Service online</span>
+            </div>
+            <div class="service-layout">
+              <div class="service-column">
+                <article class="service-card">
+                  <div class="service-card-head"><span class="service-card-icon">⚒</span><div><h3>Neuen Serviceauftrag erstellen</h3><p>Beschreiben Sie das Problem. Der Auftrag wird in diesem Prototype lokal gespeichert.</p></div></div>
+                  <form id="serviceOrderForm" class="service-form">
+                    <div class="service-field"><label for="serviceProduct">Produkt</label><select id="serviceProduct" required></select></div>
+                    <div class="service-field"><label for="serviceIssueType">Art des Problems</label><select id="serviceIssueType" required><option value="">Bitte wählen …</option><option>Gerät startet nicht</option><option>Akku / Laden</option><option>Schnitt- oder Mähleistung</option><option>Mechanik / Räder / Gehäuse</option><option>Fehlermeldung / App</option><option>Wartung / Verschleissteil</option><option>Sonstiges</option></select></div>
+                    <div class="service-field"><label for="serviceDescription">Beschreibung</label><textarea id="serviceDescription" rows="5" maxlength="1800" placeholder="Was funktioniert nicht? Seit wann tritt das Problem auf? Was haben Sie bereits geprüft?" required></textarea><small>Keine sensiblen Daten eingeben.</small></div>
+                    <div class="service-field"><span class="service-label">Bevorzugter Kontakt</span><div class="service-contact-options"><label><input type="radio" name="serviceContact" value="E-Mail" checked> E-Mail</label><label><input type="radio" name="serviceContact" value="Telefon"> Telefon</label></div></div>
+                    <button class="big-btn service-submit" type="submit">Serviceauftrag erstellen <span>→</span></button>
+                  </form>
+                  <div class="service-created" id="serviceCreated" hidden role="status"></div>
+                </article>
+                <article class="service-card service-orders-card">
+                  <div class="service-card-head compact"><span class="service-card-icon">▤</span><div><h3>Meine Serviceaufträge</h3><p>Demo-Aufträge dieses Browsers</p></div></div>
+                  <div id="serviceOrdersList" class="service-orders-list"></div>
+                </article>
+              </div>
+
+              <article class="service-card service-ai-card">
+                <div class="service-ai-head"><div class="service-ai-avatar">✦</div><div><span>KI-Serviceassistent</span><h3>Problem zuerst gemeinsam eingrenzen</h3></div><small>KI</small></div>
+                <div class="service-ai-product"><label for="serviceChatProduct">Produkt für den Chat</label><select id="serviceChatProduct"></select></div>
+                <div class="service-chat-messages" id="serviceChatMessages" aria-live="polite"></div>
+                <div class="service-chat-suggestions" id="serviceChatSuggestions"><button type="button">Mein Gerät startet nicht</button><button type="button">Der Akku lädt nicht</button><button type="button">Was kann ich sicher selbst prüfen?</button></div>
+                <form class="service-chat-form" id="serviceChatForm"><label class="visually-hidden" for="serviceChatInput">Nachricht an den Serviceassistenten</label><textarea id="serviceChatInput" rows="2" maxlength="1600" placeholder="Beschreiben Sie Ihr Problem …"></textarea><button type="submit" aria-label="Nachricht senden">➤</button></form>
+                <button class="service-copy-to-order" id="serviceCopyToOrder" type="button" hidden>Letzte Problembeschreibung in Serviceauftrag übernehmen</button>
+                <p class="service-ai-note">Der Assistent kennt die Produktdaten dieses Prototyps. Bei sicherheitsrelevanten Reparaturen verweist er an den LANDI Service.</p>
+              </article>
+            </div>
+          </section>
+        </div>
+      </div></div>
+    </section>
+  </main>
+
+  <aside class="landing-chat" id="landingChat" aria-label="LANDI Assistent">
+    <section class="landing-chat-panel" id="landingChatPanel" hidden>
+      <header class="landing-chat-head"><div class="landing-chat-avatar">✦</div><div><span>LANDI Assistent</span><small><i></i> KI-Produktberatung</small></div><button type="button" id="landingChatClose" aria-label="Chat schliessen">×</button></header>
+      <div class="landing-chat-messages" id="landingChatMessages" aria-live="polite"></div>
+      <div class="landing-chat-suggestions" id="landingChatSuggestions"><button type="button">Welcher Rasenmäher passt zu 250 m²?</button><button type="button">Akku oder Roboter?</button><button type="button">Zeig mir ein günstiges Modell</button></div>
+      <form class="landing-chat-form" id="landingChatForm"><label class="visually-hidden" for="landingChatInput">Frage an den LANDI Assistenten</label><textarea id="landingChatInput" rows="1" maxlength="1600" placeholder="Fragen Sie mich zu Produkten …"></textarea><button type="submit" aria-label="Nachricht senden">➤</button></form>
+      <div class="landing-chat-foot">KI-Antworten können Fehler enthalten · Produktdaten aus dem Prototype</div>
+    </section>
+    <button class="landing-chat-launcher" id="landingChatLauncher" type="button" aria-expanded="false"><span class="launcher-icon">✦</span><span><strong>LANDI Assistent</strong><small>Wie kann ich helfen?</small></span><i>⌃</i></button>
+  </aside>
+
+  <div class="product-picker-modal" id="productPickerModal" hidden>
+    <button class="picker-modal-backdrop" type="button" data-picker-close aria-label="Produktauswahl schliessen"></button>
+    <section class="picker-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="pickerModalTitle">
+      <div class="picker-modal-head">
+        <div><span class="compare-eyebrow">LANDI Sortiment</span><h2 id="pickerModalTitle">Produkt auswählen</h2></div>
+        <button class="picker-modal-close" type="button" data-picker-close aria-label="Schliessen">×</button>
+      </div>
+      <div class="picker-search-wrap">
+        <span aria-hidden="true">⌕</span>
+        <label class="visually-hidden" for="pickerSearch">Produkte durchsuchen</label>
+        <input id="pickerSearch" type="search" placeholder="Produktname oder Artikelnummer suchen …" autocomplete="off">
+      </div>
+      <div class="picker-modal-meta"><span id="pickerResultCount"></span><small>Preis, Bewertung und Produktbild auf einen Blick</small></div>
+      <div class="picker-product-grid" id="pickerProductGrid"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
