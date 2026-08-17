@@ -1,5 +1,5 @@
 window.LANDI_PLATFORM_CHATS = {
-  apiBase: "https://90e39693dd0742.lhr.life",
+  apiBase: "https://lucky-lights-own.loca.lt",
   productQuestions: {
     publicToken: "98b01954945cf329c415473de00e4629ef037ca7b108fb0a88eda15da6f44fba"
   },
