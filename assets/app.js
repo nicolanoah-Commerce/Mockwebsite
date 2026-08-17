@@ -846,7 +846,11 @@
     if (existing) return existing;
     const response = await fetch(`${cfg.apiBase}/external-chat/public/${cfg.publicToken}/conversations`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Bypass-Tunnel-Reminder': 'true'
+      },
       body: JSON.stringify({ client_nonce: crypto.randomUUID?.() || String(Date.now()) })
     });
     let payload = {};
@@ -888,6 +892,7 @@
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Bypass-Tunnel-Reminder': 'true',
         'X-External-Conversation': conversationToken
       },
       body: JSON.stringify({ message: framedMessage })
